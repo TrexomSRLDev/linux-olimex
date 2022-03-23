@@ -56,25 +56,13 @@
 
 			cooling-maps {
 				map0 {
-					trip = <&cpu_alert0>;
+					trip;
 					cooling-device = <&cpu0 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>;
 				};
 			};
 
 			trips {
-				cpu_alert0: cpu_alert0 {
-					/* milliCelsius */
-					temperature = <85000>;
-					hysteresis = <2000>;
-					type = "passive";
-				};
-
-				cpu_crit: cpu_crit {
-					/* milliCelsius */
-					temperature = <100000>;
-					hysteresis = <2000>;
-					type = "critical";
-				};
+				
 			};
 		};
 	};
