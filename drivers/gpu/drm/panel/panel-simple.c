@@ -686,6 +686,29 @@ static const struct panel_desc ampire_am_1280800n3tzqw_t00h = {
 	.connector_type = DRM_MODE_CONNECTOR_LVDS,
 };
 
+static const struct drm_display_mode ampire_am320240l9tnqw_00h_mode = {
+	.clock = 6500,
+	.hdisplay = 320,
+	.hsync_start = 320 + 20,
+	.hsync_end = 320 + 20 + 10,
+	.htotal = 320 + 20 + 10 + 58,
+	.vdisplay = 240,
+	.vsync_start = 240 + 4,
+	.vsync_end = 240 + 4 + 1,
+	.vtotal = 240 + 4 + 1 + 17,
+};
+
+static const struct panel_desc ampire_am320240l9tnqw_00h = {
+	.modes = &ampire_am320240l9tnqw_00h_mode,
+	.num_modes = 1,
+	.size = {
+		.width = 70,
+		.height = 53,
+	},
+	.bus_format = MEDIA_BUS_FMT_RGB666_1X18,
+	.bus_flags = DRM_BUS_FLAG_PIXDATA_DRIVE_NEGEDGE,
+};
+
 static const struct drm_display_mode ampire_am_480272h3tmqw_t01h_mode = {
 	.clock = 9000,
 	.hdisplay = 480,
@@ -3996,7 +4019,10 @@ static const struct of_device_id platform_of_match[] = {
 		.compatible = "ampire,am-1280800n3tzqw-t00h",
 		.data = &ampire_am_1280800n3tzqw_t00h,
 	}, {
-		.compatible = "ampire,am-480272h3tmqw-t01h",
+		.compatible = "ampire,am320240l9tnqw",
+		.data = &ampire_am320240l9tnqw_00h,
+        }, {
+ 		.compatible = "ampire,am-480272h3tmqw-t01h",
 		.data = &ampire_am_480272h3tmqw_t01h,
 	}, {
 		.compatible = "ampire,am800480r3tmqwa1h",
