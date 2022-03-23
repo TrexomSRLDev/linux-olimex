@@ -232,6 +232,27 @@
 
 /* TODO H3 DAP (Digital Audio Processing) bits */
 
+/* register bit change*/
+int codec_wrreg_bit(void __iomem *reg, unsigned int bit, unsigned int bvalue)
+{
+	int change;
+	unsigned int old, new, mask, value;
+
+	mask=0x1<<bit;
+	value=bvalue<<bit;
+	
+	old	=	readl((reg));
+	new	=	(old & ~mask) | value;
+	change = old != new;
+
+	if (change){
+		writel((new),(reg));
+	}
+
+	return change;
+}
+
+
 struct sun4i_codec {
 	struct device	*dev;
 	struct regmap	*regmap;
@@ -782,8 +803,8 @@ static const struct snd_soc_dapm_widget sun4i_codec_codec_dapm_widgets[] = {
 			    NULL, 0),
 
 	/* Digital parts of the DACs */
-	SND_SOC_DAPM_SUPPLY("DAC", SUN4I_CODEC_DAC_DPC,
-			    SUN4I_CODEC_DAC_DPC_EN_DA, 0,
+	SND_SOC_DAPM_SUPPLY("DAC", SND_SOC_NOPM,
++			    0, 0,
 			    NULL, 0),
 
 	/* Analog parts of the ADCs */
@@ -821,8 +842,8 @@ static const struct snd_soc_dapm_widget sun4i_codec_codec_dapm_widgets[] = {
 			 SUN4I_CODEC_ADC_ACTL_PREG2EN, 0, NULL, 0),
 
 	/* Power Amplifier */
-	SND_SOC_DAPM_MIXER("Power Amplifier", SUN4I_CODEC_ADC_ACTL,
-			   SUN4I_CODEC_ADC_ACTL_PA_EN, 0,
+	SND_SOC_DAPM_MIXER("Power Amplifier", SND_SOC_NOPM,
++			   0, 0,
 			   sun4i_codec_pa_mixer_controls,
 			   ARRAY_SIZE(sun4i_codec_pa_mixer_controls)),
 	SND_SOC_DAPM_SWITCH("Power Amplifier Mute", SND_SOC_NOPM, 0, 0,
@@ -1330,15 +1351,6 @@ static int sun4i_codec_spk_event(struct snd_soc_dapm_widget *w,
 	gpiod_set_value_cansleep(scodec->gpio_pa,
 				 !!SND_SOC_DAPM_EVENT_ON(event));
 
-	if (SND_SOC_DAPM_EVENT_ON(event)) {
-		/*
-		 * Need a delay to wait for DAC to push the data. 700ms seems
-		 * to be the best compromise not to feel this delay while
-		 * playing a sound.
-		 */
-		msleep(700);
-	}
-
 	return 0;
 }
 
@@ -1832,6 +1844,9 @@ static int sun4i_codec_probe(struct platform_device *pdev)
 		dev_err(&pdev->dev, "Failed to register our card\n");
 		goto err_assert_reset;
 	}
+	
+	codec_wrreg_bit(base+SUN4I_CODEC_DAC_DPC, SUN4I_CODEC_DAC_DPC_EN_DA,	0x1);
+	codec_wrreg_bit(base+SUN4I_CODEC_ADC_ACTL, SUN4I_CODEC_ADC_ACTL_PA_EN,	0x1);
 
 	return 0;
 
