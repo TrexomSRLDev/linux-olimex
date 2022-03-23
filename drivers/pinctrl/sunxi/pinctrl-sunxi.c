@@ -1343,14 +1343,31 @@ static int sunxi_pinctrl_setup_debounce(struct sunxi_pinctrl *pctl,
 	struct clk *hosc, *losc;
 	u8 div, src;
 	int i, ret;
+	/* Keeping for loop below clean */
+	const char* debounce_prop_name;
+	unsigned long debounce_dividend;
 
 	/* Deal with old DTs that didn't have the oscillators */
 	if (of_clk_get_parent_count(node) != 3)
 		return 0;
 
+	/*
+	 * Distinguish between simple input-debounce
+	 * and new input-debounce-ns
+	 */
+
 	/* If we don't have any setup, bail out */
-	if (!of_find_property(node, "input-debounce", NULL))
-		return 0;
+	if (!of_find_property(node, "input-debounce", NULL)) {
+		if(!of_find_property(node, "input-debounce-ns", NULL)) {
+			return 0;
+		} else {
+			debounce_prop_name="input-debounce-ns";
+			debounce_dividend=NSEC_PER_SEC;
+		}
+	} else {
+		debounce_prop_name="input-debounce";
+		debounce_dividend=USEC_PER_SEC;
+	}
 
 	losc = devm_clk_get(pctl->dev, "losc");
 	if (IS_ERR(losc))
@@ -1364,7 +1381,7 @@ static int sunxi_pinctrl_setup_debounce(struct sunxi_pinctrl *pctl,
 		unsigned long debounce_freq;
 		u32 debounce;
 
-		ret = of_property_read_u32_index(node, "input-debounce",
+		ret = of_property_read_u32_index(node, debounce_prop_name,
 						 i, &debounce);
 		if (ret)
 			return ret;
@@ -1372,7 +1389,7 @@ static int sunxi_pinctrl_setup_debounce(struct sunxi_pinctrl *pctl,
 		if (!debounce)
 			continue;
 
-		debounce_freq = DIV_ROUND_CLOSEST(USEC_PER_SEC, debounce);
+		debounce_freq = DIV_ROUND_CLOSEST(debounce_dividend, debounce);
 		losc_div = sunxi_pinctrl_get_debounce_div(losc,
 							  debounce_freq,
 							  &losc_diff);

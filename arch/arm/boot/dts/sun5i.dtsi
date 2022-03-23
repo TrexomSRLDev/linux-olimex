@@ -449,6 +449,7 @@
 		pio: pinctrl@1c20800 {
 			reg = <0x01c20800 0x400>;
 			interrupts = <28>;
+			input-debounce-ns = <42>;
 			clocks = <&ccu CLK_APB0_PIO>, <&osc24M>, <&osc32k>;
 			clock-names = "apb", "hosc", "losc";
 			gpio-controller;
