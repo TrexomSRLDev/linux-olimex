@@ -81,7 +81,7 @@
 	panel: panel {
 		compatible = "olimex,lcd-olinuxino-4.3";
 		backlight = <&backlight>;
-		enable-gpios = <&pio 1 10 GPIO_ACTIVE_HIGH>; /* PB10 */
+		enable-gpios = <&pio 1 4 GPIO_ACTIVE_HIGH>; /* PB4 */
 		pinctrl-names = "default";
 		#address-cells = <1>;
 		#size-cells = <0>;
@@ -141,13 +141,11 @@
 };
 
 &reg_usb0_vbus {
-	gpio = <&pio 6 12 GPIO_ACTIVE_HIGH>;
-	status = "okay";
+
 };
 
 &reg_usb1_vbus {
-	gpio = <&pio 2 19 GPIO_ACTIVE_HIGH>;
-	status = "okay";
+
 };
 
 &tcon0 {
@@ -176,19 +174,19 @@
 
 &usb_otg {
 	dr_mode = "otg";
-	status = "okay";
+	status = "disabled";
 };
 
 &usbphy {
-	usb0_id_det-gpios = <&pio 6 2 (GPIO_ACTIVE_HIGH | GPIO_PULL_UP)>; /* PG2 */
-	usb0_vbus_det-gpios = <&pio 6 1 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>; /* PG1 */
-	usb0_vbus-supply = <&reg_usb0_vbus>;
-	usb1_vbus-supply = <&reg_usb1_vbus>;
+	usb0_id_det-gpios; /* PG2 */
+	usb0_vbus_det-gpios; /* PG1 */
+	usb0_vbus-supply;
+	usb1_vbus-supply;
 	status = "okay";
 };
 
 &rtp {
 	allwinner,ts-attached;
-	touchscreen-inverted-x;
+	touchscreen-swapped-x-y;
 };
 
